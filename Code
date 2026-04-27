@@ -1,0 +1,113 @@
+class Event:
+    def __init__(self, name, priority):
+        self.name = name
+        self.priority = priority
+
+
+class EventScheduler:
+    def __init__(self):
+        self.heap = []
+
+    # Swap elements
+    def swap(self, i, j):
+        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
+
+    # Heapify Up (for insertion)
+    def heapify_up(self, index):
+        while index > 0:
+            parent = (index - 1) // 2
+            if self.heap[parent].priority < self.heap[index].priority:
+                self.swap(parent, index)
+                index = parent
+            else:
+                break
+
+    # Heapify Down (for deletion)
+    def heapify_down(self, index):
+        size = len(self.heap)
+        largest = index
+        left = 2 * index + 1
+        right = 2 * index + 2
+
+        if left < size and self.heap[left].priority > self.heap[largest].priority:
+            largest = left
+
+        if right < size and self.heap[right].priority > self.heap[largest].priority:
+            largest = right
+
+        if largest != index:
+            self.swap(index, largest)
+            self.heapify_down(largest)
+
+    # Add Event
+    def add_event(self, name, priority):
+        new_event = Event(name, priority)
+        self.heap.append(new_event)
+        self.heapify_up(len(self.heap) - 1)
+        print("Event added successfully!")
+
+    # Process Highest Priority Event
+    def process_event(self):
+        if len(self.heap) == 0:
+            print("No events to process!")
+            return
+
+        top_event = self.heap[0]
+        print(f" Processing Event: {top_event.name} (Priority: {top_event.priority})")
+
+        # Replace root with last element
+        self.heap[0] = self.heap[-1]
+        self.heap.pop()
+
+        if len(self.heap) > 0:
+            self.heapify_down(0)
+
+    # Display Events
+    def display_events(self):
+        if not self.heap:
+            print(" No events scheduled.")
+            return
+
+        print("\n Scheduled Events:")
+        for event in self.heap:
+            print(f"{event.name} (Priority: {event.priority})")
+
+
+# Main Menu
+def main():
+    scheduler = EventScheduler()
+
+    while True:
+        print("\n--- Event Scheduler ---")
+        print("1. Add Event")
+        print("2. Process Event")
+        print("3. Display Events")
+        print("4. Exit")
+
+        try:
+            choice = int(input("Enter your choice: "))
+
+            if choice == 1:
+                name = input("Enter event name: ")
+                priority = int(input("Enter priority: "))
+                scheduler.add_event(name, priority)
+
+            elif choice == 2:
+                scheduler.process_event()
+
+            elif choice == 3:
+                scheduler.display_events()
+
+            elif choice == 4:
+                print(" Exiting program...")
+                break
+
+            else:
+                print(" Invalid choice!")
+
+        except ValueError:
+            print(" Please enter valid input!")
+
+
+if __name__ == "__main__":
+    main()
